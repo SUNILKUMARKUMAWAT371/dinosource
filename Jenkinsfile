@@ -2,10 +2,10 @@ pipeline {
     agent { label "GCP-JENKINS-AGENT" }
 
     parameters {
-        booleanParam(name: 'RUN_SONAR', defaultValue: true, description: 'Run SonarQube Analysis')
-        booleanParam(name: 'RUN_TRIVY', defaultValue: true, description: 'Run Trivy Scan')
-        booleanParam(name: 'RUN_FILESYSTEM_SCAN', defaultValue: true, description: 'Run File System Scan')
-        booleanParam(name: 'RUN_DOCKER_DEPLOY', defaultValue: false, description: 'Run Docker Compose Deploy')
+        booleanParam(name: 'SONARQUBE_CODE_QUALITY', defaultValue: true, description: 'SonarQube code Analysis')
+        booleanParam(name: 'TRIVY_SCANING', defaultValue: true, description: 'Trivy Docker Image Scanning')
+        booleanParam(name: 'FILESYSTEM_SCANNING', defaultValue: true, description: 'File System Scanning')
+        booleanParam(name: 'CLOUDRUN_DEPLOYMENT', defaultValue: true, description: 'CloudRun Deployment')
         choice(name: 'BRANCH_NAME', choices: ['dev', 'main', 'staging'], description: 'Select Branch to Build')
     }
 
@@ -15,7 +15,7 @@ pipeline {
         REGION = 'asia-south1'
         REPO_NAME = 'dinosaur'
         IMAGE_NAME = 'dinosaur'
-        IMAGE_TAG = '0.0.9'
+        IMAGE_TAG = '0.0.10'
         SERVICE_NAME = 'dinosaur-svc'
     }
 
@@ -35,7 +35,7 @@ pipeline {
 
         stage('SonarQube Code Quality Analysis') {
             when {
-                expression { params.RUN_SONAR == true }
+                expression { params.SONARQUBE_CODE_QUALITY == true }
             }
             steps {
                 echo 'Running SonarQube Analysis...'
@@ -47,7 +47,7 @@ pipeline {
 
         stage('File System Scan') {
             when {
-                expression { params.RUN_FILESYSTEM_SCAN == true }
+                expression { params.FILESYSTEM_SCANNING == true }
             }
             steps {
                 echo 'Performing file system scan...'
@@ -63,7 +63,7 @@ pipeline {
 
         stage('Trivy Scan') {
             when {
-                expression { params.RUN_TRIVY == true }
+                expression { params.TRIVY_SCANING == true }
             }
             steps {
                 echo 'Running Trivy vulnerability scan...'
@@ -79,7 +79,7 @@ pipeline {
 
         stage('Deploy to Cloud Run') {
             when {
-                expression { params.RUN_DOCKER_DEPLOY }
+                expression { params.CLOUDRUN_DEPLOYMENT == true }
             }
             steps {
                 sh """
