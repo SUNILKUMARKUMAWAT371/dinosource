@@ -14,13 +14,13 @@ pipeline {
     stages {
         stage('Google Cloud Auth') {
             steps {
-                withCredentials([file(credentialsId: "${GCP_CREDENTIALS}", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: GCP_CREDENTIALS, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                     sh 'gcloud config set project $PROJECT_ID'
                 }
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t asia-south1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
