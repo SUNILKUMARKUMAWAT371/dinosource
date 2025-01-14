@@ -2,10 +2,10 @@ pipeline {
     agent { label "GCP-JENKINS-AGENT" }
 
     parameters {
-        booleanParam(name: 'RUN_SONAR', defaultValue: false, description: 'Run SonarQube Analysis')
-        booleanParam(name: 'RUN_TRIVY', defaultValue: false, description: 'Run Trivy Scan')
-        booleanParam(name: 'RUN_FILESYSTEM_SCAN', defaultValue: false, description: 'Run File System Scan')
-        booleanParam(name: 'RUN_DOCKER_DEPLOY', defaultValue: true, description: 'Run Docker Compose Deploy')
+        booleanParam(name: 'RUN_SONAR', defaultValue: true, description: 'Run SonarQube Analysis')
+        booleanParam(name: 'RUN_TRIVY', defaultValue: true, description: 'Run Trivy Scan')
+        booleanParam(name: 'RUN_FILESYSTEM_SCAN', defaultValue: true, description: 'Run File System Scan')
+        booleanParam(name: 'RUN_DOCKER_DEPLOY', defaultValue: false, description: 'Run Docker Compose Deploy')
         choice(name: 'BRANCH_NAME', choices: ['dev', 'main', 'staging'], description: 'Select Branch to Build')
     }
 
@@ -20,7 +20,7 @@ pipeline {
     }
 
     stages {
-        
+
         stage('Google Cloud Auth') {
             steps {
                 withCredentials([file(credentialsId: 'dinosaur-sa-key', variable: 'GCP_Service_Account')]) {
@@ -55,6 +55,12 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
+            }
+        }
+
         stage('Trivy Scan') {
             when {
                 expression { params.RUN_TRIVY }
@@ -62,12 +68,6 @@ pipeline {
             steps {
                 echo 'Running Trivy vulnerability scan...'
                 sh 'trivy fs . --exit-code 1'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
             }
         }
 
