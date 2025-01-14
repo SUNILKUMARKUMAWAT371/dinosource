@@ -12,11 +12,12 @@ pipeline {
     }
 
     stages {
-        stage('GCP')
+        stage('GCP') {
             steps {
                 sh 'gcloud'
                 sh 'gcloud auth list'
             }
+        }
     }
 //         stage('Google Cloud Auth') {
 //             steps {
