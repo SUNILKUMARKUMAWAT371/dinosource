@@ -10,25 +10,24 @@ pipeline {
     }
 
     environment {
+        REPO_URL = 'https://github.com/LondheShubham153/django-notes-app.git'
+        DOCKER_IMAGE = 'django-notes-app:latest'
         SONAR_HOME = tool 'Sonar'
-        PROJECT_ID = 'adept-protocol-441916-r0' // gcp project id
-        REGION = 'asia-south1'                  // region name
-        REPO_NAME = 'dinosaur'                  // docker registry name
-        IMAGE_NAME = 'dinosaur'                 // docker image name
-        IMAGE_TAG='0.0.8'                       // docker image tag
-        SERVICE_NAME = 'dinosaur-svc'           // cloud run service id
+        PROJECT_ID = 'your-gcp-project-id'
+        REGION = 'us-central1' // Adjust region as needed
+        SERVICE_NAME = 'your-cloud-run-service-name'
+        IMAGE_NAME = 'gcr.io/${PROJECT_ID}/${SERVICE_NAME}'
+        GCP_CREDENTIALS = credentials('gcp-credentials') // ID from Jenkins
     }
 
     stages {
-        stage('Google Cloud Auth') {
+        stage('Checkout Code') {
             steps {
-                withCredentials([file(credentialsId: 'dinosaur-sa-key', variable: 'GCP_Service_Account')]) {
-                    sh("gcloud auth activate-service-account --key-file=${GCP_Service_Account}")
-                    sh 'gcloud config set project $PROJECT_ID'
-                }
+                echo 'Cloning the repository...'
+                git branch: BRANCH, url: REPO_URL
             }
         }
-        
+
         stage('SonarQube Code Quality Analysis') {
             when {
                 expression { params.RUN_SONAR == true }
@@ -36,7 +35,7 @@ pipeline {
             steps {
                 echo 'Doing Sonar Analysis...'
                 withSonarQubeEnv('Sonar') {
-                    sh '$SONAR_HOME/bin/sonar-scanner -Dsonar.projectName=dinosaur -Dsonar.projectKey=dinosaur'
+                    sh '$SONAR_HOME/bin/sonar-scanner -Dsonar.projectName=django-notes-app -Dsonar.projectKey=django-notes-app'
                 }
             }
         }
@@ -61,38 +60,57 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Authenticate with GCP') {
             steps {
-                sh 'docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
+                script {
+                    withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh '''
+                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        gcloud config set project $PROJECT_ID
+                        '''
+                    }
+                }
             }
         }
 
-        stage('Push to Artifact Registry') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG'
+                sh '''
+                docker build -t $IMAGE_NAME .
+                '''
+            }
+        }
+
+        stage('Push Docker Image to Artifact Registry') {
+            steps {
+                sh '''
+                gcloud auth configure-docker
+                docker push $IMAGE_NAME
+                '''
             }
         }
 
         stage('Deploy to Cloud Run') {
             steps {
                 sh '''
-                    gcloud run deploy $SERVICE_NAME \
-                        --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG \
-                        --region=$REGION \
-                        --platform=managed \
-                        --allow-unauthenticated
+                gcloud run deploy $SERVICE_NAME \
+                    --image $IMAGE_NAME \
+                    --region $REGION \
+                    --platform managed \
+                    --allow-unauthenticated
                 '''
             }
         }
-
-        post {
-            always {
-                cleanWs()
-            }
-       }
     }
 
     post {
+        always {
+            cleanWs()
+        }
+    }
+}
+
+post {
         always {
             echo 'Cleaning up workspace...'
             cleanWs()
@@ -100,13 +118,14 @@ pipeline {
         success {
             echo 'Pipeline completed successfully!'
             emailext body: 'Pipeline executed successfully!',
-                    subject: 'Pipeline Success',
-                    to: 'sunil.kumawat@thewitslab.com'
+                     subject: 'Pipeline Success',
+                     to: 'your-email@example.com'
         }
         failure {
             echo 'Pipeline failed. Please check the logs.'
             emailext body: 'Pipeline execution failed. Please check Jenkins logs.',
-                    subject: 'Pipeline Failed',
-                    to: 'sunil.kumawat@thewitslab.com'
+                     subject: 'Pipeline Failed',
+                     to: 'your-email@example.com'
         }
     }
+}
