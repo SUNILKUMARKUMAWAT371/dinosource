@@ -14,7 +14,6 @@ pipeline {
     stages {
         stage('GCP') {
             steps {
-                sh 'gcloud'
                 sh 'gcloud auth list'
             }
         }
