@@ -14,23 +14,30 @@ pipeline {
     stages {
         stage('Authenticate with GCP') {
             steps {
-                script {
-                    // Write the credentials to a file
-                    writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
-                    
-                    // Activate the service account
-                    sh '''
-                        gcloud auth activate-service-account --key-file=gcp-key.json
-                        gcloud config set project adept-protocol-441916-r0
-                    '''
+                withCredentials([file(credentialsId: GCP_CREDENTIALS, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh 'env'
+                    sh 'echo $GCP_CREDENTIALS'
+                    sh 'echo $GOOGLE_APPLICATION_CREDENTIALS'
+                    sh 'cat $GCP_CREDENTIALS'
+                    sh 'cat $GOOGLE_APPLICATION_CREDENTIALS'
                 }
+                // script {
+                //     // Write the credentials to a file
+                //     writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
+                    
+                //     // Activate the service account
+                //     sh '''
+                //         gcloud auth activate-service-account --key-file=gcp-key.json
+                //         gcloud config set project adept-protocol-441916-r0
+                //     '''
+                // }
             }
         }
-        stage('GCP Command') {
-            steps {
-                sh 'gcloud compute instances list'
-            }
-        }
+        // stage('GCP Command') {
+        //     steps {
+        //         sh 'gcloud compute instances list'
+        //     }
+        // }
     }
 //         stage('Google Cloud Auth') {
 //             steps {
