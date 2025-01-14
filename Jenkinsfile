@@ -11,71 +11,39 @@ pipeline {
     }
 
     stages {
-        stage('Authenticate with GCP') {
+        stage('Google Cloud Auth') {
             steps {
                 withCredentials([file(credentialsId: 'dinosaur-sa-key', variable: 'GCP_Service_Account')]) {
                     sh("gcloud auth activate-service-account --key-file=${GCP_Service_Account}")
-                    sh 'gcloud auth list'
-                    sh 'gcloud config list'
+                    sh 'gcloud config set project $PROJECT_ID'
                 }
-                    // sh 'env'
-                    // sh 'pwd'
-                    // sh 'rm -rf gcp-sa.json'
-                    // sh 'cat $GCP_CREDENTIALS >> gcp-sa.json'
-                    // sh 'gcloud auth activate-service-account --key-file=gcp-sa.json'
-                    // sh 'gcloud config set project $PROJECT_ID'
-                    // sh 'gcloud compute instances list'
-                // script {
-                //     // Write the credentials to a file
-                //     writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
-                    
-                //     // Activate the service account
-                //     sh '''
-                //         gcloud auth activate-service-account --key-file=gcp-key.json
-                //         gcloud config set project adept-protocol-441916-r0
-                //     '''
-                // }
             }
         }
-        // stage('GCP Command') {
-        //     steps {
-        //         sh 'gcloud compute instances list'
-        //     }
-        // }
-    }
-//         stage('Google Cloud Auth') {
-//             steps {
-//                 withCredentials([file(credentialsId: GCP_CREDENTIALS, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-//                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-//                     sh 'gcloud config set project $PROJECT_ID'
-//                 }
-//             }
-//         }
         
-//         stage('Build Docker Image') {
-//             steps {
-//                 sh 'docker build -t asia-south1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
-//             }
-//         }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
+            }
+        }
 
-//         stage('Push to Artifact Registry') {
-//             steps {
-//                 sh 'docker push us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG'
-//             }
-//         }
+        stage('Push to Artifact Registry') {
+            steps {
+                sh 'docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG'
+            }
+        }
 
-//         stage('Deploy to Cloud Run') {
-//             steps {
-//                 sh '''
-//                     gcloud run deploy $SERVICE_NAME \
-//                         --image=us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG \
-//                         --region=$REGION \
-//                         --platform=managed \
-//                         --allow-unauthenticated
-//                 '''
-//             }
-//         }
-//     }
+        stage('Deploy to Cloud Run') {
+            steps {
+                sh '''
+                    gcloud run deploy $SERVICE_NAME \
+                        --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG \
+                        --region=$REGION \
+                        --platform=managed \
+                        --allow-unauthenticated
+                '''
+            }
+        }
+    }
 
     post {
         success {
