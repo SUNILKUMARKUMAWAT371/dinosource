@@ -18,6 +18,10 @@ pipeline {
                     sh 'pwd'
                     sh 'echo $GCP_CREDENTIALS'
                     sh 'cat $GCP_CREDENTIALS'
+                    sh 'cat $GCP_CREDENTIALS >> gcp-sa.json'
+                    sh 'cat $gcp-sa.json'
+                    // sh 'gcloud auth activate-service-account --key-file=$GCP_CREDENTIALS'
+                    // sh 'gcloud config set project $PROJECT_ID'
                 // script {
                 //     // Write the credentials to a file
                 //     writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
