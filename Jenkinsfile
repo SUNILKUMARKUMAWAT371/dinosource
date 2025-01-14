@@ -14,13 +14,10 @@ pipeline {
     stages {
         stage('Authenticate with GCP') {
             steps {
-                withCredentials([file(credentialsId: GCP_CREDENTIALS, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh 'env'
+                    sh 'pwd'
                     sh 'echo $GCP_CREDENTIALS'
-                    sh 'echo $GOOGLE_APPLICATION_CREDENTIALS'
                     sh 'cat $GCP_CREDENTIALS'
-                    sh 'cat $GOOGLE_APPLICATION_CREDENTIALS'
-                }
                 // script {
                 //     // Write the credentials to a file
                 //     writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
