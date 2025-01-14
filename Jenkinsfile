@@ -15,7 +15,7 @@ pipeline {
         REGION = 'asia-south1'
         REPO_NAME = 'dinosaur'
         IMAGE_NAME = 'dinosaur'
-        IMAGE_TAG = '0.0.8'
+        IMAGE_TAG = '0.0.9'
         SERVICE_NAME = 'dinosaur-svc'
     }
 
