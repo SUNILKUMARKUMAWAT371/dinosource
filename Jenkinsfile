@@ -17,6 +17,7 @@ pipeline {
                 sh 'gcloud'
                 sh 'gcloud auth list'
             }
+    }
 //         stage('Google Cloud Auth') {
 //             steps {
 //                 withCredentials([file(credentialsId: GCP_CREDENTIALS, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
@@ -51,12 +52,12 @@ pipeline {
 //         }
 //     }
 
-//     post {
-//         success {
-//             echo 'Deployment Successful!'
-//         }
-//         failure {
-//             echo 'Deployment Failed!'
-//         }
-//     }
-// }
+    post {
+        success {
+            echo 'Deployment Successful!'
+        }
+        failure {
+            echo 'Deployment Failed!'
+        }
+    }
+}
