@@ -6,7 +6,7 @@ pipeline {
         REGION = 'asia-south1' // region name
         REPO_NAME = 'dinosaur' // docker registry name
         IMAGE_NAME = 'dinosaur' // docker image name
-        IMAGE_TAG='0.0.6' // docker image tag
+        IMAGE_TAG='0.0.7' // docker image tag
         SERVICE_NAME = 'dinosaur-svc' // cloud run service id
     }
 
