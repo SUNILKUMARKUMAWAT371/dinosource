@@ -14,13 +14,16 @@ pipeline {
     stages {
         stage('Authenticate with GCP') {
             steps {
-                    sh 'env'
-                    sh 'pwd'
-                    sh 'rm -rf gcp-sa.json'
-                    sh 'cat $GCP_CREDENTIALS >> gcp-sa.json'
-                    sh 'gcloud auth activate-service-account --key-file=gcp-sa.json'
-                    sh 'gcloud config set project $PROJECT_ID'
-                    sh 'gcloud compute instances list'
+                withCredentials([file(credentialsId: 'dinosaur-sa-key', variable: 'GC_KEY')]) {
+                    sh("gcloud auth activate-service-account --key-file=${GC_KEY}")
+                }
+                    // sh 'env'
+                    // sh 'pwd'
+                    // sh 'rm -rf gcp-sa.json'
+                    // sh 'cat $GCP_CREDENTIALS >> gcp-sa.json'
+                    // sh 'gcloud auth activate-service-account --key-file=gcp-sa.json'
+                    // sh 'gcloud config set project $PROJECT_ID'
+                    // sh 'gcloud compute instances list'
                 // script {
                 //     // Write the credentials to a file
                 //     writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
