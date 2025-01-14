@@ -91,7 +91,6 @@ pipeline {
             }
        }
     }
-}
 
     post {
         always {
@@ -111,3 +110,4 @@ pipeline {
                     to: 'sunil.kumawat@thewitslab.com'
         }
     }
+}
