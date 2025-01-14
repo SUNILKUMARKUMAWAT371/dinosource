@@ -12,9 +12,23 @@ pipeline {
     }
 
     stages {
-        stage('GCP') {
+        stage('Authenticate with GCP') {
             steps {
-                sh 'gcloud auth list'
+                script {
+                    // Write the credentials to a file
+                    writeFile file: 'gcp-key.json', text: GCLOUD_CREDENTIALS
+                    
+                    // Activate the service account
+                    sh '''
+                        gcloud auth activate-service-account --key-file=gcp-key.json
+                        gcloud config set project adept-protocol-441916-r0
+                    '''
+                }
+            }
+        }
+        stage('GCP Command') {
+            steps {
+                sh 'gcloud compute instances list'
             }
         }
     }
