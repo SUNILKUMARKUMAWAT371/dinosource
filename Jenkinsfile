@@ -8,14 +8,15 @@ pipeline {
         IMAGE_NAME = 'dinosaur' // docker image name
         IMAGE_TAG='0.0.5' // docker image tag
         SERVICE_NAME = 'dinosaur-svc' // cloud run service id
-        GCP_CREDENTIALS = credentials('dinosaur-sa-key')  // Jenkins credential ID
     }
 
     stages {
         stage('Authenticate with GCP') {
             steps {
-                withCredentials([file(credentialsId: 'dinosaur-sa-key', variable: 'GC_KEY')]) {
-                    sh("gcloud auth activate-service-account --key-file=${GC_KEY}")
+                withCredentials([file(credentialsId: 'dinosaur-sa-key', variable: 'GCP_Service_Account')]) {
+                    sh("gcloud auth activate-service-account --key-file=${GCP_Service_Account}")
+                    sh 'gcloud auth list'
+                    sh 'gcloud config list'
                 }
                     // sh 'env'
                     // sh 'pwd'
