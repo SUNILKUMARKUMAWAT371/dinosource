@@ -1,6 +1,6 @@
 
 pipeline {
-    agent agent { label "GCP-JENKINS-AGENT" }
+    agent { label "GCP-JENKINS-AGENT" }
 
     stages {
         stage('Build') {
