@@ -20,10 +20,9 @@ pipeline {
     }
 
     stages {
-        stage('Load Parameters from .env') {
+        stage('Load Parameters from .env dependencies') {
             steps {
                 script {
-                    // Load and parse .env file
                     def envFile = readFile('.env')
                     def envVars = envFile.split('\n').collect { line ->
                         def parts = line.split('=')
@@ -36,6 +35,22 @@ pipeline {
                         }
                     }
                     echo "Loaded environment variables from .env file"
+                }
+            }
+        }
+
+        stage('Write Secret to File') {
+            steps {
+                script {
+                    // Access the secret text using withCredentials
+                    withCredentials([string(credentialsId: 'dinosaur.env.dev', variable: 'MY_SECRET')]) {
+                        // Write the secret to the env.dev file
+                        sh '''
+                        echo "${MY_SECRET}" > env.dev
+                        ls -la
+                        cat env.dev
+                        '''
+                    }
                 }
             }
         }
@@ -76,11 +91,11 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
-            }
-        }
+        // stage('Build Docker Image') {
+        //     steps {
+        //         sh 'docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG .'
+        //     }
+        // }
 
         stage('Trivy Scan') {
             when {
