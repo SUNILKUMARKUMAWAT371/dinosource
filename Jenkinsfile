@@ -23,9 +23,9 @@ pipeline {
         stage('Load Parameters from .env') {
             steps {
                 script {
-                    // Load the .env file
+                    // Load and parse .env file
                     def envFile = readFile('.env')
-                    envFile.split('\n').each { line ->
+                    def envVars = envFile.split('\n').collect { line ->
                         def parts = line.split('=')
                         if (parts.size() == 2) {
                             def key = parts[0].trim()
@@ -35,6 +35,7 @@ pipeline {
                             }
                         }
                     }
+                    echo "Loaded environment variables from .env file"
                 }
             }
         }
