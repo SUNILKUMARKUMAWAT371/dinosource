@@ -45,7 +45,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'VAULT_TOKEN', variable: 'SECRET')]) {
                     sh 'echo "$SECRET" > $CREDENTIALS_FILE'
                 }
-                #script {
+                //script {
          
                     // Access the secret text using withCredentials
                     #withCredentials([string(credentialsId: 'dinosaur.env.dev', variable: 'MY_SECRET')]) {
@@ -58,7 +58,7 @@ pipeline {
                     #    echo $GIT_BRANCH
                     #    '''
                     #}
-                #}
+                // }
             }
         }
 
