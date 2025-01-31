@@ -17,6 +17,7 @@ pipeline {
         IMAGE_NAME = 'dinosaur'
         IMAGE_TAG = '0.0.10'
         SERVICE_NAME = 'dinosaur-svc'
+        CREDENTIALS_FILE = 'secret.txt'
     }
 
     stages {
@@ -41,19 +42,29 @@ pipeline {
 
         stage('Write Secret to File') {
             steps {
-                script {
-                    // Access the secret text using withCredentials
-                    withCredentials([string(credentialsId: 'dinosaur.env.dev', variable: 'MY_SECRET')]) {
-                        // Write the secret to the env.dev file
-                        sh '''
-                        echo "${MY_SECRET}" > env.dev
-                        ls -la
-                        cat env.dev
-                        git branch -a
-                        echo $GIT_BRANCH
-                        '''
-                    }
+                withCredentials([string(credentialsId: 'VAULT_TOKEN', variable: 'SECRET')]) {
+                    sh 'echo "$SECRET" > $CREDENTIALS_FILE'
                 }
+                #script {
+         
+                    // Access the secret text using withCredentials
+                    #withCredentials([string(credentialsId: 'dinosaur.env.dev', variable: 'MY_SECRET')]) {
+                    #    // Write the secret to the env.dev file
+                    #    sh '''
+                    #    echo "${MY_SECRET}" > env.dev
+                    #    ls -la
+                    #    cat env.dev
+                    #    git branch -a
+                    #    echo $GIT_BRANCH
+                    #    '''
+                    #}
+                #}
+            }
+        }
+
+        stage('Read and Print Credentials') {
+            steps {
+                sh 'cat $CREDENTIALS_FILE'
             }
         }
 
