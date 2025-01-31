@@ -49,6 +49,7 @@ pipeline {
                         echo "${MY_SECRET}" > env.dev
                         ls -la
                         cat env.dev
+                        git branch
                         '''
                     }
                 }
