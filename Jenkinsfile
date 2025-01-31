@@ -50,7 +50,7 @@ pipeline {
                         ls -la
                         cat env.dev
                         git branch -a
-                        printenv
+                        echo $GIT_BRANCH
                         '''
                     }
                 }
