@@ -23,13 +23,13 @@ pipeline {
 
                     withCredentials([
                         // string(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, variable: 'ADMIN_DOCKER_NAME'),
-                        usernamePassword(credentialsId: GCP_PROJECT_ID_CRED_ID, usernameVariable: 'GCP_PROJECT_ID', passwordVariable: 'GCP_PROJECT_ID'),
-                        usernamePassword(credentialsId: GCP_REGION_CRED_ID, usernameVariable: 'GCP_REGION', passwordVariable: 'GCP_REGION'),
-                        usernamePassword(credentialsId: DOCKER_REGISTRY_CRED_ID, usernameVariable: 'DOCKER_REGISTRY_NAME', passwordVariable: 'DOCKER_REGISTRY_NAME'),
+                        usernamePassword(credentialsId: GCP_PROJECT_ID_CRED_ID, usernameVariable: 'GCP_PROJECT', passwordVariable: 'GCP_PROJECT_ID'),
+                        usernamePassword(credentialsId: GCP_REGION_CRED_ID, usernameVariable: 'REGION', passwordVariable: 'GCP_REGION'),
+                        usernamePassword(credentialsId: DOCKER_REGISTRY_CRED_ID, usernameVariable: 'DOCKER_REGISTRY', passwordVariable: 'DOCKER_REGISTRY_NAME'),
 
-                        usernamePassword(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, usernameVariable: 'DOCKER_IMAGE_NAME', passwordVariable: 'DOCKER_IMAGE_NAME'),
-                        usernamePassword(credentialsId: ADMIN_CLOUDRUN_SERVICE_CRED_ID, usernameVariable: 'CLOUDRUN_SERVICE_NAME', passwordVariable: 'CLOUDRUN_SERVICE_NAME'),
-                        usernamePassword(credentialsId: ADMIN_SONARQUBE_PROJECT_CRED_ID, usernameVariable: 'SONARQUBE_PROJECT', passwordVariable: 'SONARQUBE_PROJECT'),
+                        usernamePassword(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, usernameVariable: 'DOCKER_IMAGE', passwordVariable: 'DOCKER_IMAGE_NAME'),
+                        usernamePassword(credentialsId: ADMIN_CLOUDRUN_SERVICE_CRED_ID, usernameVariable: 'CLOUDRUN_SERVICE', passwordVariable: 'CLOUDRUN_SERVICE_NAME'),
+                        usernamePassword(credentialsId: ADMIN_SONARQUBE_PROJECT_CRED_ID, usernameVariable: 'SONARQUBE', passwordVariable: 'SONARQUBE_PROJECT'),
                     ]) {
                         echo "GCP Project ID: $GCP_PROJECT_ID"
                         echo "GCP Region: $GCP_REGION"
