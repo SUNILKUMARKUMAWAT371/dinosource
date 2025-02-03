@@ -22,20 +22,21 @@ pipeline {
                     echo "Using environment: ${ENVIRONMENT}"
 
                     withCredentials([
-                        string(credentialsId: GCP_PROJECT_ID_CRED_ID, variable: 'GCP_PROJECT_ID'),
-                        string(credentialsId: GCP_REGION_CRED_ID, variable: 'GCP_REGION'),
-                        string(credentialsId: DOCKER_REGISTRY_CRED_ID, variable: 'DOCKER_REGISTRY'),
+                        // string(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, variable: 'ADMIN_DOCKER_NAME'),
+                        usernamePassword(credentialsId: GCP_PROJECT_ID_CRED_ID, usernameVariable: 'GCP_PROJECT_ID', passwordVariable: 'GCP_PROJECT_SECRET'),
+                        usernamePassword(credentialsId: GCP_REGION_CRED_ID, usernameVariable: 'GCP_REGION', passwordVariable: 'GCP_REGION_SECRET'),
+                        usernamePassword(credentialsId: DOCKER_REGISTRY_CRED_ID, usernameVariable: 'DOCKER_REGISTRY_NAME', passwordVariable: 'DOCKER_REGISTRY_NAME_SECRET'),
 
-                        string(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, variable: 'ADMIN_DOCKER_NAME'),
-                        string(credentialsId: ADMIN_CLOUDRUN_SERVICE_CRED_ID, variable: 'ADMIN_CLOUDRUN_SERVICE'),
-                        string(credentialsId: ADMIN_SONARQUBE_PROJECT_CRED_ID, variable: 'ADMIN_SONARQUBE_PROJECT')
+                        usernamePassword(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, usernameVariable: 'DOCKER_IMAGE_NAME', passwordVariable: 'DOCKER_IMAGE_NAME_SECRET'),
+                        usernamePassword(credentialsId: ADMIN_CLOUDRUN_SERVICE_CRED_ID, usernameVariable: 'CLOUDRUN_SERVICE_NAME', passwordVariable: 'CLOUDRUN_SERVICE_NAME_SECRET'),
+                        usernamePassword(credentialsId: ADMIN_SONARQUBE_PROJECT_CRED_ID, usernameVariable: 'SONARQUBE_PROJECT', passwordVariable: 'SONARQUBE_PROJECT_SECRET'),
                     ]) {
                         echo "GCP Project ID: $GCP_PROJECT_ID"
                         echo "GCP Region: $GCP_REGION"
-                        echo "Docker Registry: $DOCKER_REGISTRY"
-                        echo "Admin Docker Image: $ADMIN_DOCKER_NAME"
-                        echo "Admin Cloud Run Service: $ADMIN_CLOUDRUN_SERVICE"
-                        echo "SonarQube Project: $ADMIN_SONARQUBE_PROJECT"
+                        echo "Docker Registry: $DOCKER_REGISTRY_NAME"
+                        echo "Admin Docker Image: $DOCKER_IMAGE_NAME"
+                        echo "Admin Cloud Run Service: $CLOUDRUN_SERVICE_NAME"
+                        echo "SonarQube Project: $SONARQUBE_PROJECT"
                     }
                 }
             }
