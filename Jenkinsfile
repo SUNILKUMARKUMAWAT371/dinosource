@@ -2,10 +2,13 @@ pipeline {
     agent any
     environment {
         ENVIRONMENT = getEnvironmentName(env.BRANCH_NAME)
+
+        // Global variables
         GCP_PROJECT_ID_CRED_ID = "finance_${ENVIRONMENT}_gcp_project_id"
         GCP_REGION_CRED_ID = "finance_${ENVIRONMENT}_gcp_region"
         DOCKER_REGISTRY_CRED_ID = "finance_${ENVIRONMENT}_docker_registry_name"
 
+        // Admin Variables
         ADMIN_DOCKER_NAME_CRED_ID = "finance_${ENVIRONMENT}_admin_docker_name"
         ADMIN_CLOUDRUN_SERVICE_CRED_ID = "finance_${ENVIRONMENT}_admin_cloudrun_service_name"
         ADMIN_SONARQUBE_PROJECT_CRED_ID = "finance_${ENVIRONMENT}_admin_sonarqube_project"
@@ -22,7 +25,7 @@ pipeline {
                         string(credentialsId: GCP_PROJECT_ID_CRED_ID, variable: 'GCP_PROJECT_ID'),
                         string(credentialsId: GCP_REGION_CRED_ID, variable: 'GCP_REGION'),
                         string(credentialsId: DOCKER_REGISTRY_CRED_ID, variable: 'DOCKER_REGISTRY'),
-                        
+
                         string(credentialsId: ADMIN_DOCKER_NAME_CRED_ID, variable: 'ADMIN_DOCKER_NAME'),
                         string(credentialsId: ADMIN_CLOUDRUN_SERVICE_CRED_ID, variable: 'ADMIN_CLOUDRUN_SERVICE'),
                         string(credentialsId: ADMIN_SONARQUBE_PROJECT_CRED_ID, variable: 'ADMIN_SONARQUBE_PROJECT')
@@ -42,12 +45,12 @@ pipeline {
 
 def getEnvironmentName(branch) {
     if (branch == 'Staging') {
-        return 'Staging'
+        return 'staging'
     } else if (branch == 'pre-prod') {
         return 'preprod'
     } else if (branch == 'prod') {
         return 'prod'
     } else {
-        return 'Staging'
+        return 'staging'
     }
 }
