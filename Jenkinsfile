@@ -45,7 +45,7 @@ pipeline {
 }
 
 def getEnvironmentName(branch) {
-    if (branch == 'Staging') {
+    if (branch == 'origin/Staging') {
         return 'staging'
     } else if (branch == 'pre-prod') {
         return 'preprod'
