@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        ENVIRONMENT = getEnvironmentName(env.BRANCH_NAME)
+        ENVIRONMENT = getEnvironmentName(env.GIT_BRANCH) //(env.BRANCH_NAME)
 
         // Global variables
         GCP_PROJECT_ID_CRED_ID = "finance_${ENVIRONMENT}_gcp_project_id"
@@ -18,7 +18,7 @@ pipeline {
         stage('Retrieve Credentials') {
             steps {
                 script {
-                    echo "Triggered from branch: ${env.BRANCH_NAME}"
+                    echo "Triggered from branch: ${env.GIT_BRANCH}" //${env.BRANCH_NAME}
                     echo "Using environment: ${ENVIRONMENT}"
 
                     withCredentials([
@@ -45,13 +45,13 @@ pipeline {
 }
 
 def getEnvironmentName(branch) {
-    if (branch == 'refs/remotes/origin/Staging') {
+    if (branch == 'Staging') {
         return 'staging'
     } else if (branch == 'pre-prod') {
         return 'preprod'
     } else if (branch == 'prod') {
         return 'prod'
     } else {
-        return 'staging'
+        return 'null'
     }
 }
